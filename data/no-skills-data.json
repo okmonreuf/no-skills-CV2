@@ -1,0 +1,20 @@
+{
+  "users": [
+    {
+      "id": "41eda7f7-67e7-4637-b7f5-644f82d71fbf",
+      "username": "yupi",
+      "displayName": "Administrateur",
+      "role": "admin",
+      "avatarUrl": null,
+      "isMuted": false,
+      "isBanned": false,
+      "passwordSalt": "7dd4b12bb6aa856cd3f8d8f093847252",
+      "passwordHash": "263a09f614193d95ac402956c3673be864b17f1d0fe3f51268cb3d39fc1d20ea05baa03d89f28ea9bb6f790ac9dea7e553316ad010402b130da3f541e9a58bd3",
+      "createdAt": "2025-10-08T15:58:18.168Z",
+      "updatedAt": "2025-10-08T15:58:18.168Z"
+    }
+  ],
+  "generalMessages": [],
+  "directMessages": [],
+  "logs": []
+}
