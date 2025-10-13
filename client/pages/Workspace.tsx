@@ -10,8 +10,9 @@ import { PrivatePanel } from "@/components/workspace/private-panel";
 import { AdminPanel } from "@/components/workspace/admin-panel";
 import { BannedPanel } from "@/components/workspace/banned-panel";
 import { EventsPanel } from "@/components/workspace/events-panel";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { useSession } from "@/hooks/use-session";
 
 const renderPanel = (section: WorkspaceSection) => {
   switch (section) {
@@ -36,12 +37,38 @@ const Workspace = () => {
       workspace: { navigationDescriptions },
     },
   } = useLocale();
+  const { isLoading, isAuthenticated, refetch } = useSession();
   const [section, setSection] = useState<WorkspaceSection>("general");
   const navigate = useNavigate();
 
-  const handleSignOut = () => {
-    navigate("/");
+  useEffect(() => {
+    if (!isLoading && !isAuthenticated) {
+      navigate("/", { replace: true });
+    }
+  }, [isLoading, isAuthenticated, navigate]);
+
+  const handleSignOut = async () => {
+    await fetch("/api/auth/logout", {
+      method: "POST",
+      credentials: "include",
+    });
+    await refetch();
+    navigate("/", { replace: true });
   };
+
+  if (isLoading) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 text-slate-100">
+        <div className="rounded-3xl border border-white/10 bg-white/[0.04] px-8 py-6 text-sm text-slate-300 shadow-2xl shadow-black/40">
+          Chargement de votre session…
+        </div>
+      </div>
+    );
+  }
+
+  if (!isAuthenticated) {
+    return null;
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 text-slate-100">

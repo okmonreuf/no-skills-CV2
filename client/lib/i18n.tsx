@@ -15,28 +15,19 @@ const LocaleContext = createContext<LocaleContextValue | null>(null);
 const translations = {
   fr: {
     brand: "No-Skills Messagerie",
-    heroTitle: "Contr��le total sur votre messagerie de communauté",
+    heroTitle: "Espace sécurisé No-Skills",
     heroDescription:
-      "Gérez les accès, modérez les discussions et pilotez les événements dans un espace sécurisé et sobre en bleu et gris.",
-    credentialsNotice:
-      "Compte administrateur par défaut — à modifier immédiatement après la première connexion.",
-    credentialsUser: "Identifiant : yupi",
-    credentialsPassword: "Mot de passe : 1616Dh!dofly",
+      "Connectez-vous pour accéder à la console de messagerie et modérer vos communautés.",
     loginTitle: "Connexion administrateur",
     usernameLabel: "Nom d'utilisateur",
     passwordLabel: "Mot de passe",
     loginButton: "Se connecter",
-    loginHelper:
-      "La création de comptes est réservée aux administrateurs. Pour toute demande, contactez l'équipe No-Skills.",
-    securityTag: "Sûreté",
-    securityChecklistTitle: "Sécurité intégrée",
-    securityChecklist: [
-      "Authentification chiffrée et audit en temps réel",
-      "Création de comptes uniquement par les administrateurs",
-      "Journalisation des actions sensibles (ban, mute, suppressions)",
-      "Déploiement automatisé et HTTPS via Let's Encrypt",
+    loginHelper: "Accès réservé aux administrateurs autorisés.",
+    heroHighlights: [
+      "Salon général piloté en temps réel",
+      "Gestion centralisée des comptes et permissions",
+      "Événements tournants décidés par les admins",
     ],
-    contactSupport: "Besoin d'aide ? support@no-skills.fr",
     languageToggle: {
       fr: "FR",
       de: "DE",
@@ -190,28 +181,19 @@ const translations = {
   },
   de: {
     brand: "No-Skills Messagerie",
-    heroTitle: "Volle Kontrolle über eure Community-Messenger",
+    heroTitle: "Gesichertes No-Skills-Portal",
     heroDescription:
-      "Verwalten Sie Zugänge, moderieren Sie Gespräche und steuern Sie Events in einer sicheren, grau-blauen Umgebung.",
-    credentialsNotice:
-      "Standard-Admin-Konto — bitte direkt nach dem ersten Login ändern.",
-    credentialsUser: "Benutzername: yupi",
-    credentialsPassword: "Passwort: 1616Dh!dofly",
+      "Melden Sie sich an, um die Moderationskonsole der Community-Messagerie zu öffnen.",
     loginTitle: "Administrator-Anmeldung",
     usernameLabel: "Benutzername",
     passwordLabel: "Passwort",
     loginButton: "Anmelden",
-    loginHelper:
-      "Neue Konten werden ausschließlich durch Administratoren erstellt. Kontaktieren Sie das No-Skills-Team für Anfragen.",
-    securityTag: "Sicherheit",
-    securityChecklistTitle: "Integrierte Sicherheit",
-    securityChecklist: [
-      "Verschlüsselte Authentifizierung und Live-Audits",
-      "Kontenerstellung ausschließlich durch Admins",
-      "Protokollierung sensibler Aktionen (Ban, Mute, Löschungen)",
-      "Automatisierte Bereitstellung und HTTPS via Let's Encrypt",
+    loginHelper: "Zugang nur für autorisierte Administratoren.",
+    heroHighlights: [
+      "Allgemeiner Kanal in Echtzeit",
+      "Zugänge und Rechte unter Admin-Kontrolle",
+      "Rotierende Events mit vorgegebenen Themen",
     ],
-    contactSupport: "Hilfe benötigt? support@no-skills.fr",
     languageToggle: {
       fr: "FR",
       de: "DE",

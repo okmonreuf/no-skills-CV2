@@ -1,5 +1,5 @@
 import { FormEvent, useState } from "react";
-import { ShieldCheck, UserCheck, UserCog } from "lucide-react";
+import { ShieldCheck, UserCheck } from "lucide-react";
 import { LanguageSwitch } from "@/components/language-switch";
 import { useLocale } from "@/lib/i18n";
 import { useNavigate } from "react-router-dom";
@@ -23,10 +23,20 @@ export default function Index() {
         headers: {
           "Content-Type": "application/json",
         },
+        credentials: "include",
         body: JSON.stringify({ username, password }),
       });
 
       if (!response.ok) {
+        setError(messages.loginError);
+        return;
+      }
+
+      const payload = (await response.json().catch(() => null)) as
+        | { success?: boolean }
+        | null;
+
+      if (!payload?.success) {
         setError(messages.loginError);
         return;
       }
@@ -62,11 +72,8 @@ export default function Index() {
 
         <main className="grid flex-1 grid-cols-1 gap-10 py-10 lg:grid-cols-[1.05fr,0.95fr]">
           <section className="flex flex-col justify-between rounded-3xl border border-white/10 bg-white/[0.03] p-10 shadow-2xl shadow-black/30 backdrop-blur">
-            <div className="space-y-6">
+            <div className="space-y-8">
               <div className="space-y-4">
-                <span className="inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.4em] text-primary">
-                  {messages.securityTag.toUpperCase()}
-                </span>
                 <h1 className="text-4xl font-semibold tracking-tight text-white lg:text-5xl">
                   {messages.heroTitle}
                 </h1>
@@ -75,39 +82,22 @@ export default function Index() {
                 </p>
               </div>
 
-              <div className="rounded-2xl border border-emerald-400/20 bg-emerald-500/10 p-6 text-emerald-100">
-                <div className="flex items-center gap-3 text-emerald-200">
-                  <UserCog className="h-5 w-5" />
-                  <p className="text-sm font-semibold tracking-wide uppercase text-emerald-200">
-                    {messages.credentialsNotice}
-                  </p>
-                </div>
-                <div className="mt-3 space-y-1 text-sm text-emerald-100">
-                  <p>{messages.credentialsUser}</p>
-                  <p>{messages.credentialsPassword}</p>
-                </div>
-              </div>
-            </div>
-
-            <div className="mt-8 space-y-4">
-              <p className="text-xs font-semibold uppercase tracking-[0.4em] text-slate-400">
-                {messages.securityChecklistTitle}
-              </p>
               <ul className="grid gap-3 text-sm text-slate-200">
-                {messages.securityChecklist.map((item) => (
+                {messages.heroHighlights.map((item) => (
                   <li
                     key={item}
-                    className="flex items-start gap-3 rounded-2xl border border-white/5 bg-white/[0.02] p-4"
+                    className="flex items-start gap-3 rounded-2xl border border-white/5 bg-white/[0.05] p-4 backdrop-blur-sm"
                   >
                     <ShieldCheck className="mt-0.5 h-5 w-5 text-primary" />
                     <span>{item}</span>
                   </li>
                 ))}
               </ul>
-              <div className="flex items-center gap-2 text-xs text-slate-500">
-                <UserCheck className="h-4 w-4" />
-                <span>{messages.loginHelper}</span>
-              </div>
+            </div>
+
+            <div className="flex items-center gap-2 text-xs text-slate-500">
+              <UserCheck className="h-4 w-4" />
+              <span>{messages.loginHelper}</span>
             </div>
           </section>
 
@@ -175,13 +165,10 @@ export default function Index() {
                   disabled={isSubmitting}
                   className="w-full rounded-2xl bg-primary px-4 py-3 text-base font-semibold text-primary-foreground shadow-lg shadow-primary/25 transition hover:translate-y-[-2px] hover:shadow-xl hover:shadow-primary/20 disabled:cursor-not-allowed disabled:bg-primary/60"
                 >
-                  {isSubmitting ? "…" : messages.loginButton}
+                  {isSubmitting ? "���" : messages.loginButton}
                 </button>
               </div>
 
-              <div className="mt-8 rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-xs text-slate-400">
-                {messages.contactSupport}
-              </div>
             </form>
           </section>
         </main>
