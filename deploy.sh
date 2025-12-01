@@ -46,7 +46,17 @@ else
     echo "🔑 Mot de passe administrateur généré: ${ADMIN_PASSWORD}"
   fi
 
-  ADMIN_HASH=$(openssl passwd -6 "${ADMIN_PASSWORD}")
+  # Generate bcryptjs hash using Node.js
+  cat > /tmp/hash_gen.mjs <<'HASHSCRIPT'
+import bcrypt from 'bcryptjs';
+const password = process.argv[1];
+const hash = await bcrypt.hash(password, 10);
+console.log(hash);
+HASHSCRIPT
+
+  ADMIN_HASH=$(node /tmp/hash_gen.mjs "${ADMIN_PASSWORD}")
+  rm -f /tmp/hash_gen.mjs
+
   cat > server/.env <<EOF
 ADMIN_USERNAME=${ADMIN_USER}
 ADMIN_PASSWORD_HASH=${ADMIN_HASH}

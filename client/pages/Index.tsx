@@ -3,10 +3,13 @@ import { ShieldCheck, UserCheck } from "lucide-react";
 import { LanguageSwitch } from "@/components/language-switch";
 import { useLocale } from "@/lib/i18n";
 import { useNavigate } from "react-router-dom";
+import { useQueryClient } from "@tanstack/react-query";
+import { SESSION_QUERY_KEY } from "@/hooks/use-session";
 
 export default function Index() {
   const { messages } = useLocale();
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -28,6 +31,8 @@ export default function Index() {
       });
 
       if (!response.ok) {
+        const errorData = await response.json().catch(() => ({})) as { message?: string };
+        console.error("Login failed:", errorData);
         setError(messages.loginError);
         return;
       }
@@ -41,9 +46,13 @@ export default function Index() {
         return;
       }
 
+      console.log("Login successful, navigating to /app");
+
+      // Invalidate session query cache and navigate
+      await queryClient.invalidateQueries({ queryKey: SESSION_QUERY_KEY });
       navigate("/app");
     } catch (err) {
-      console.error(err);
+      console.error("Login error:", err);
       setError(messages.loginNetworkError);
     } finally {
       setIsSubmitting(false);

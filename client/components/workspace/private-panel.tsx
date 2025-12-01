@@ -1,7 +1,8 @@
 import { useLocale } from "@/lib/i18n";
 import { cn } from "@/lib/utils";
 import { MailPlus, MessageCircle, Search, Send, ShieldAlert } from "lucide-react";
-import { FormEvent, useMemo, useState } from "react";
+import { FormEvent, useMemo, useState, useEffect } from "react";
+import { translateMessage } from "@/lib/translate";
 
 interface PrivateUser {
   id: string;
@@ -16,6 +17,8 @@ interface PrivateMessage {
   sender: "admin" | "member";
   content: string;
   timestamp: string;
+  language?: "fr" | "de";
+  translatedContent?: string;
 }
 
 const seedUsers: PrivateUser[] = [
@@ -47,6 +50,7 @@ const archivedMessages: Record<string, PrivateMessage[]> = {
       sender: "member",
       content: "Mise à jour : la charte de modération a été signée par tout le monde.",
       timestamp: "Hier",
+      language: "fr",
     },
   ],
   u2: [
@@ -55,6 +59,7 @@ const archivedMessages: Record<string, PrivateMessage[]> = {
       sender: "admin",
       content: "Bienvenue Carlos ! Présente-toi dans le salon général dès que possible.",
       timestamp: "09:15",
+      language: "fr",
     },
   ],
   u3: [
@@ -63,12 +68,14 @@ const archivedMessages: Record<string, PrivateMessage[]> = {
       sender: "admin",
       content: "Ton accès vocal est suspendu 24h. Rappel des règles envoyé.",
       timestamp: "08:50",
+      language: "fr",
     },
   ],
 };
 
 export const PrivatePanel = () => {
   const {
+    locale,
     messages: {
       workspace: { private: labels, statuses },
     },
@@ -76,6 +83,31 @@ export const PrivatePanel = () => {
   const [query, setQuery] = useState("");
   const [selectedUser, setSelectedUser] = useState<PrivateUser | null>(seedUsers[1]);
   const [draft, setDraft] = useState("");
+  const [showTranslations, setShowTranslations] = useState(true);
+
+  // Translate messages when language changes
+  useEffect(() => {
+    const translateMessages = async () => {
+      if (!selectedUser) return;
+      const messages = archivedMessages[selectedUser.id] ?? [];
+      const translated = await Promise.all(
+        messages.map(async (msg) => {
+          if (showTranslations && msg.language && msg.language !== locale && !msg.translatedContent) {
+            try {
+              const translated = await translateMessage(msg.content, msg.language, locale);
+              return { ...msg, translatedContent: translated };
+            } catch {
+              return msg;
+            }
+          }
+          return msg;
+        })
+      );
+      archivedMessages[selectedUser.id] = translated;
+    };
+
+    translateMessages();
+  }, [locale, showTranslations, selectedUser]);
 
   const filteredUsers = useMemo(() => {
     const normalized = query.trim().toLowerCase();
@@ -99,6 +131,7 @@ export const PrivatePanel = () => {
         sender: "admin",
         content: draft,
         timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+        language: locale,
       },
     ];
     setDraft("");
@@ -201,20 +234,34 @@ export const PrivatePanel = () => {
                   </h3>
                   <p className="text-xs text-slate-400">@{selectedUser.username}</p>
                 </div>
-                <span
-                  className={cn(
-                    "rounded-full px-3 py-1 text-[11px] font-semibold uppercase tracking-wider",
-                    selectedUser.isAdmin
-                      ? "bg-primary text-primary-foreground"
-                      : selectedUser.status === "muted"
-                        ? "bg-amber-500/30 text-amber-200"
-                        : selectedUser.status === "banned"
-                          ? "bg-rose-500/30 text-rose-200"
-                          : "bg-emerald-500/20 text-emerald-100",
-                  )}
-                >
-                  {statusText(selectedUser.status, selectedUser.isAdmin)}
-                </span>
+                <div className="flex items-center gap-3">
+                  <button
+                    onClick={() => setShowTranslations(!showTranslations)}
+                    className={cn(
+                      "rounded-full px-3 py-1 text-xs font-semibold uppercase tracking-[0.3em] transition",
+                      showTranslations
+                        ? "bg-blue-500/20 text-blue-200"
+                        : "bg-slate-700/20 text-slate-400"
+                    )}
+                    title="Toggler la traduction automatique"
+                  >
+                    🌐
+                  </button>
+                  <span
+                    className={cn(
+                      "rounded-full px-3 py-1 text-[11px] font-semibold uppercase tracking-wider",
+                      selectedUser.isAdmin
+                        ? "bg-primary text-primary-foreground"
+                        : selectedUser.status === "muted"
+                          ? "bg-amber-500/30 text-amber-200"
+                          : selectedUser.status === "banned"
+                            ? "bg-rose-500/30 text-rose-200"
+                            : "bg-emerald-500/20 text-emerald-100",
+                    )}
+                  >
+                    {statusText(selectedUser.status, selectedUser.isAdmin)}
+                  </span>
+                </div>
               </div>
             </header>
 
@@ -244,8 +291,18 @@ export const PrivatePanel = () => {
                       </span>
                       <span>•</span>
                       <time>{message.timestamp}</time>
+                      {message.language && message.language !== locale && (
+                        <span className="ml-auto rounded-full bg-blue-500/20 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-blue-200">
+                          {message.language === "fr" ? "FR" : "DE"}
+                        </span>
+                      )}
                     </div>
                     <p className="mt-3 text-base text-white">{message.content}</p>
+                    {message.translatedContent && showTranslations && (
+                      <p className="mt-2 text-sm text-slate-400 italic">
+                        {message.translatedContent}
+                      </p>
+                    )}
                   </article>
                 ))
               )}

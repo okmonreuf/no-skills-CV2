@@ -22,7 +22,8 @@ export const useSession = () => {
       return (await response.json()) as SessionResponse;
     },
     staleTime: 1000 * 60 * 5,
-    retry: false,
+    retry: 1,
+    retryDelay: 200,
   });
 
   return {
